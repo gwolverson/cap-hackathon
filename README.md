@@ -16,6 +16,15 @@ npm run build
 npm run preview
 ```
 
+## Tests
+
+```sh
+npm test
+npm run test:watch
+```
+
+[src/App.test.jsx](src/App.test.jsx) uses Vitest, React Testing Library, and jsdom to test menu search and filters, favorites, cart quantities and totals, delivery fees, address editing, checkout snapshots, tracking, the completion GIF, and keyboard navigation in dialogs. Fake timers exercise notification expiry and tracking without waiting in real time. Shared setup is in [src/test/setup.js](src/test/setup.js), with configuration in [vitest.config.js](vitest.config.js).
+
 ## 1. System overview
 
 Everything involved in browsing, checkout, and tracking runs in the browser. External services supply visual assets only.
@@ -48,7 +57,7 @@ There is no backend, database, authentication, payment processing, geocoding, or
 ```mermaid
 flowchart TD
     HTML[index.html: root element] --> Entry[src/main.jsx: createRoot]
-    Entry --> App[App component]
+    Entry --> App[src/App.jsx: App component]
     App --> Header[Header: navigation, address, bag count]
     App --> Hero[Hero and express delivery card]
     App --> Menu[Menu: search, categories, favorites, meal cards]
@@ -166,13 +175,15 @@ Vite bundles the application for static hosting. The completion GIF is imported 
 flowchart LR
     subgraph Source[Repository]
         HTML[index.html]
-        JS[src/main.jsx]
+        JS[src/main.jsx: browser entry]
+        App[src/App.jsx: interface and behavior]
         CSS[src/styles.css]
         GIF[assets/drone-delivery.gif]
         Deps[React, React DOM, lucide-react]
     end
     HTML --> Vite[Vite: npm run build]
     JS --> Vite
+    App --> Vite
     CSS --> Vite
     GIF --> Vite
     Deps --> Vite
@@ -182,4 +193,4 @@ flowchart LR
     Remote[Unsplash, Google Fonts, Pravatar] -->|Runtime requests| Browser
 ```
 
-The local completion animation ships with the app. Meal photos, fonts, and avatars require internet access. All application logic remains in [src/main.jsx](src/main.jsx), with presentation in [src/styles.css](src/styles.css); [package.json](package.json) defines the development and build commands.
+The local completion animation ships with the app. Meal photos, fonts, and avatars require internet access. [src/main.jsx](src/main.jsx) mounts the testable [App component](src/App.jsx), with presentation in [src/styles.css](src/styles.css); [package.json](package.json) defines the development, build, and test commands.
